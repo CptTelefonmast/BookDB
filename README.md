@@ -1,11 +1,23 @@
 # BookDB
-# Attention! As of now, there is no out of the box encryption and no user authentication to add, edit or delete books in this project. I've got it running on a RasPi on my internal networks, so for now, I haven't had the need for any of those.
 
+> ⚠ **Security Notice**  
+> This project currently does **not include encryption or user authentication**.  
+> Anyone who can access the application can add, edit or delete books.  
+>
+> The project was originally built for use on a Raspberry Pi inside a private network.  
+> If you plan to expose it to the internet, you should add authentication and HTTPS.
+
+## Overview
 
 BookDB is a lightweight PHP web application for managing a personal book collection.
+
 It allows storing books with authors, series information, publication year and multiple genres.  
 The interface supports searching, sorting and pagination and works on both desktop and mobile devices.
-# Features
+
+---
+
+## Features
+
 - Add, edit and delete books
 - Multiple genres per book
 - Create new genres dynamically
@@ -16,44 +28,96 @@ The interface supports searching, sorting and pagination and works on both deskt
   - genre
 - Sortable table columns
 - Pagination
-- Responsive layout (desktop + mobile)
+- Responsive layout (desktop and mobile)
 - Light / dark theme
-# Technology Stack
+
+---
+
+## Technology Stack
+
 - PHP 8
 - MariaDB / MySQL
 - Apache
 - Vanilla JavaScript
 - CSS (no framework)
 
-# Requirements
-# Install the required packages:
+---
+
+# Installation
+
+## Install required packages
+
+```bash
 sudo apt update
 sudo apt install apache2 mariadb-server php php-mysql
+```
 
-# Enable and start the services:
+Enable and start the services:
+
+```bash
 sudo systemctl enable apache2
 sudo systemctl enable mariadb
+
 sudo systemctl start apache2
 sudo systemctl start mariadb
+```
 
-# Clone the repository into the Apache web directory:
+---
+
+## Clone the repository
+
+Clone the repository into the Apache web directory:
+
+```bash
 cd /var/www/html
-
 sudo git clone https://github.com/YOUR_USERNAME/bookdb.git
+```
+
+Your project directory should now be:
+
+```
+/var/www/html/bookdb
+```
+
+---
 
 # Database Setup
+
 Open the MariaDB shell:
+
+```bash
 sudo mysql
-# Create the database:
+```
+
+## Create the database
+
+```sql
 CREATE DATABASE bookdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-Create the database user (replace <yourusername> and <yourpassword> with whatever you want: 
+```
+
+## Create a database user
+
+Replace `<yourusername>` and `<yourpassword>` with credentials of your choice.
+
+```sql
 CREATE USER '<yourusername>'@'localhost' IDENTIFIED BY '<yourpassword>';
-GRANT ALL PRIVILEGES ON bookdb.* TO 'bookdb'@'localhost';
+GRANT ALL PRIVILEGES ON bookdb.* TO '<yourusername>'@'localhost';
 FLUSH PRIVILEGES;
-# Select database:
+```
+
+Select the database:
+
+```sql
 USE bookdb;
-# Create tables:
-Books:
+```
+
+---
+
+# Create Tables
+
+## Books
+
+```sql
 CREATE TABLE buecher (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     autor VARCHAR(255) NOT NULL,
@@ -62,12 +126,20 @@ CREATE TABLE buecher (
     teil_der_reihe INT NULL,
     erscheinungsjahr INT NULL
 );
-Genres:
+```
+
+## Genres
+
+```sql
 CREATE TABLE genres (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL UNIQUE
 );
-Book-Genre relation:
+```
+
+## Book-Genre relation
+
+```sql
 CREATE TABLE buch_genres (
     buch_id INT UNSIGNED NOT NULL,
     genre_id INT UNSIGNED NOT NULL,
@@ -75,13 +147,65 @@ CREATE TABLE buch_genres (
     FOREIGN KEY (buch_id) REFERENCES buecher(id) ON DELETE CASCADE,
     FOREIGN KEY (genre_id) REFERENCES genres(id) ON DELETE CASCADE
 );
+```
 
-# Edit db_connect.php:
-Change the variables set under Database configuration. Replace $dbUser with the username you stated while creating the database and $dbPassword with the password you stated while creating the database.
-# Adjust folder permissions:
+---
+
+# Database Configuration
+
+Edit the file:
+
+```
+db_connect.php
+```
+
+Adjust the variables in the **Database configuration** section.
+
+Replace:
+
+- `$dbUser` with the username you created
+- `$dbPassword` with the password you created
+
+---
+
+# Adjust Folder Permissions
+
+Allow Apache and your user to access the project directory.
+
+Replace `<yourusername>` with the user account you use to upload files.
+
+```bash
 sudo chown -R <yourusername>:www-data /var/www/html/bookdb
 sudo find /var/www/html/bookdb -type d -exec chmod 775 {} \;
 sudo find /var/www/html/bookdb -type f -exec chmod 664 {} \;
-Optional (recommended):
-Enable group inheritance so new files automatically belong to the www-data group:
+```
+
+### Optional (recommended)
+
+Enable group inheritance so new files automatically belong to the `www-data` group:
+
+```bash
 sudo chmod g+s /var/www/html/bookdb
+```
+
+---
+
+# Running the Application
+
+Open the application in your browser:
+
+```
+http://localhost/bookdb
+```
+
+or on a server:
+
+```
+http://your-server/bookdb
+```
+
+---
+
+# License
+
+This project is licensed under the **GNU General Public License (GPL)**.
