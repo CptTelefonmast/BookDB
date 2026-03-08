@@ -24,7 +24,7 @@ The interface supports searching, sorting and pagination and works on both deskt
 - Apache
 - Vanilla JavaScript
 - CSS (no framework)
-- 
+
 # Requirements
 # Install the required packages:
 sudo apt update
