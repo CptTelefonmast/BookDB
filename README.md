@@ -38,6 +38,7 @@ sudo systemctl start mariadb
 
 # Clone the repository into the Apache web directory:
 cd /var/www/html
+
 sudo git clone https://github.com/YOUR_USERNAME/bookdb.git
 
 # Database Setup
