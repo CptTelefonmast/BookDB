@@ -1,1 +1,2 @@
-BookDB is a browser-based application I use to organise the books I own.
+BookDB is a browser-based application I use to organise the books I own. It's written in PHP and Javascript because that's what I'm able to do and for once, both are actually the right tool for the job. 
+The data is handled by a MariaDB which is accessed using PHP's mysqli-API. The database (for now) consists of two table, buecher in which the books are stored and genres in which the genres are stored and linked to the books by pk/fk.
