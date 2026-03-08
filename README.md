@@ -1,5 +1,5 @@
 # BookDB
-# Attention! As of now, there is no out of the box encryption or user authentication to add, edit or delete books in this project. I've got it running on a RasPi on my internal networks, so for now, I haven't had the need for any of those.
+# Attention! As of now, there is no out of the box encryption and no user authentication to add, edit or delete books in this project. I've got it running on a RasPi on my internal networks, so for now, I haven't had the need for any of those.
 
 
 BookDB is a lightweight PHP web application for managing a personal book collection.
