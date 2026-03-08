@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+
+<!-- rotes Buch -->
+<rect x="8" y="12" width="14" height="40" rx="2" fill="#c94a4a"></rect>
+
+<!-- blaues Buch -->
+<rect x="22" y="10" width="14" height="42" rx="2" fill="#4a79c9"></rect>
+
+<!-- grünes Buch -->
+<rect x="36" y="14" width="14" height="38" rx="2" fill="#4ac97a"></rect>
+
+</svg>
