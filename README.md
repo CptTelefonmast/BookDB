@@ -1,4 +1,7 @@
 # BookDB
+# Attention! As of now, there is no out of the box encryption or user authentication to add, edit or delete books in this project. I've got it running on a RasPi on my internal networks, so for now, I haven't had the need for any of those.
+
+
 BookDB is a lightweight PHP web application for managing a personal book collection.
 It allows storing books with authors, series information, publication year and multiple genres.  
 The interface supports searching, sorting and pagination and works on both desktop and mobile devices.
@@ -21,10 +24,7 @@ The interface supports searching, sorting and pagination and works on both deskt
 - Apache
 - Vanilla JavaScript
 - CSS (no framework)
-
-# Attention! As of now, there is no built-in encryption out of the box. It's just plain http. There's also no authentication to edit or delete books for now as I've got it all running on a RasPi on my internal network.
-
-
+- 
 # Requirements
 # Install the required packages:
 sudo apt update
