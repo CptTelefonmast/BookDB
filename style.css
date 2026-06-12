@@ -31,12 +31,28 @@
     --danger-button: #b4453c;
     --danger-button-hover: #98372f;
 
+    --info-bg: #eef4f8;
+    --info-border: #c4d3df;
+    --info-text: #345268;
+
     --shadow: 0 10px 28px rgba(69, 50, 35, 0.10);
     --shadow-soft: 0 4px 12px rgba(69, 50, 35, 0.06);
+
+    --radius-card: 18px;
+    --radius-box: 14px;
+    --radius-control: 12px;
+    --radius-pill: 999px;
+
+    --space-xs: 8px;
+    --space-sm: 10px;
+    --space-md: 14px;
+    --space-lg: 18px;
+    --space-xl: 20px;
+    --space-2xl: 24px;
 }
 
 /* =========================================================
-   Nightmode
+   Dark mode
    ========================================================= */
 
 body.dark
@@ -71,6 +87,10 @@ body.dark
     --danger-text: #ffd6d9;
     --danger-button: #b2575e;
     --danger-button-hover: #ca6a72;
+
+    --info-bg: #24323f;
+    --info-border: #395065;
+    --info-text: #d4e5f2;
 
     --shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
     --shadow-soft: 0 8px 22px rgba(0, 0, 0, 0.18);
@@ -134,7 +154,7 @@ a:hover
 {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 18px;
+    border-radius: var(--radius-card);
     box-shadow: var(--shadow-soft);
 }
 
@@ -149,12 +169,14 @@ a:hover
 
 .search-card
 {
-    flex: 1 1 760px;
+    flex: 1 1 620px;
+    min-width: 320px;
     padding: 14px;
 }
 
 .meta-card
 {
+    flex: 0 0 220px;
     min-width: 220px;
     padding: 14px 16px;
 }
@@ -185,7 +207,7 @@ a:hover
     background: var(--danger-bg);
 }
 
-.shell .toolbar
+.toolbar
 {
     display: flex;
     flex-wrap: wrap;
@@ -203,6 +225,12 @@ a:hover
     flex: 0 0 260px;
 }
 
+.section-stack
+{
+    display: grid;
+    gap: 20px;
+}
+
 /* =========================================================
    Typography
    ========================================================= */
@@ -218,7 +246,10 @@ a:hover
 .btn,
 thead th,
 .sort-indicator,
-.theme-toggle
+.theme-toggle,
+.checkbox-label,
+.info-card-label,
+.status-label
 {
     font-family: Arial, sans-serif;
 }
@@ -228,7 +259,7 @@ thead th,
     display: inline-block;
     margin-bottom: 14px;
     padding: 6px 10px;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: var(--accent-soft);
     color: var(--accent-hover);
     font-size: 12px;
@@ -255,7 +286,9 @@ h1
 }
 
 .meta-label,
-.details-label
+.details-label,
+.info-card-label,
+.status-label
 {
     color: var(--muted);
     font-size: 12px;
@@ -267,6 +300,13 @@ h1
 .meta-label
 {
     margin-bottom: 6px;
+}
+
+.details-label,
+.info-card-label,
+.status-label
+{
+    margin-bottom: 8px;
 }
 
 .meta-value
@@ -289,6 +329,22 @@ h1
 .danger-text
 {
     margin: 0;
+    line-height: 1.6;
+}
+
+.section-title
+{
+    margin: 0 0 16px;
+    color: var(--text-strong);
+    font-size: 22px;
+    line-height: 1.3;
+}
+
+.section-subtitle
+{
+    margin: 0 0 18px;
+    color: var(--muted);
+    font-size: 15px;
     line-height: 1.6;
 }
 
@@ -357,12 +413,14 @@ h1
 .search-form input[type="text"],
 .form-field input[type="text"],
 .form-field input[type="number"],
+.form-field input[type="date"],
 .form-field select,
-.pagination-select
+.pagination-select,
+.inline-display-field
 {
     width: 100%;
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: var(--radius-control);
     background: var(--surface);
     color: var(--text);
     font-size: 15px;
@@ -372,7 +430,8 @@ h1
 
 .search-form input[type="text"]::placeholder,
 .form-field input[type="text"]::placeholder,
-.form-field input[type="number"]::placeholder
+.form-field input[type="number"]::placeholder,
+.inline-display-field::placeholder
 {
     color: var(--muted);
 }
@@ -385,8 +444,10 @@ h1
 
 .form-field input[type="text"],
 .form-field input[type="number"],
+.form-field input[type="date"],
 .form-field select,
-.pagination-select
+.pagination-select,
+.inline-display-field
 {
     padding: 13px 15px;
 }
@@ -394,11 +455,24 @@ h1
 .search-form input[type="text"]:focus,
 .form-field input[type="text"]:focus,
 .form-field input[type="number"]:focus,
+.form-field input[type="date"]:focus,
 .form-field select:focus,
 .pagination-select:focus
 {
     border-color: var(--accent);
     box-shadow: 0 0 0 4px rgba(95, 136, 179, 0.18);
+}
+
+.form-field input[readonly],
+.form-field input:disabled,
+.form-field select:disabled,
+.inline-display-field[readonly],
+.inline-display-field:disabled
+{
+    background: var(--surface-soft);
+    color: var(--muted);
+    cursor: default;
+    opacity: 1;
 }
 
 .form-field select,
@@ -473,18 +547,86 @@ h1
     display: block;
 }
 
-.genre-grid
+.genre-grid,
+.schuber-grid
 {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 18px;
 }
 
-.genre-item
+.genre-item,
+.schuber-item
 {
     display: flex;
     flex-direction: column;
     gap: 8px;
+}
+
+.form-divider
+{
+    grid-column: 1 / -1;
+    height: 1px;
+    background: var(--border);
+    margin: 4px 0;
+}
+
+/* =========================================================
+   Checkbox / Toggle Blocks
+   ========================================================= */
+
+.checkbox-row
+{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 48px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-control);
+    background: var(--surface);
+}
+
+.checkbox-label
+{
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-strong);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"]
+{
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+.inline-toggle-group
+{
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 14px;
+    align-items: end;
+}
+
+.inline-toggle-group .checkbox-row
+{
+    height: 100%;
+}
+
+.conditional-field
+{
+    display: none;
+}
+
+.conditional-field.is-visible
+{
+    display: flex;
 }
 
 /* =========================================================
@@ -493,10 +635,12 @@ h1
 
 .btn
 {
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
     padding: 13px 18px;
     border: 1px solid transparent;
-    border-radius: 12px;
+    border-radius: var(--radius-control);
     font-size: 14px;
     font-weight: 700;
     text-decoration: none;
@@ -579,6 +723,13 @@ h1
     background: var(--error-bg);
     border-color: var(--error-border);
     color: var(--error-text);
+}
+
+.alert-info
+{
+    background: var(--info-bg);
+    border-color: var(--info-border);
+    color: var(--info-text);
 }
 
 .alert-list
@@ -718,25 +869,213 @@ tbody tr:last-child td
    Details
    ========================================================= */
 
-.details-item
+.details-item,
+.info-card
 {
     padding: 18px;
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: var(--radius-box);
     background: var(--surface);
 }
 
-.details-label
-{
-    margin-bottom: 8px;
-}
-
-.details-value
+.details-value,
+.info-card-value
 {
     color: var(--text);
     font-size: 16px;
     line-height: 1.6;
     word-break: break-word;
+}
+
+.info-card-grid
+{
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.inline-status-grid
+{
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 18px;
+    align-items: end;
+}
+
+.inline-display-field
+{
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+a.inline-display-field
+{
+    color: var(--text);
+}
+
+a.inline-display-field:hover
+{
+    color: var(--text);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+}
+
+.status-card
+{
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    background: var(--card);
+    box-shadow: var(--shadow-soft);
+}
+
+.status-grid
+{
+    display: grid;
+    gap: 18px;
+}
+
+.status-item
+{
+    padding: 18px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-box);
+    background: var(--surface);
+}
+
+.status-value
+{
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.status-meta
+{
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* =========================================================
+   Wish list
+   ========================================================= */
+
+.wishlist-toolbar-side
+{
+    justify-content: stretch;
+}
+
+.wishlist-toolbar-button
+{
+    min-height: 58px;
+    padding: 14px 18px;
+    line-height: 1.3;
+    text-align: center;
+}
+
+.wishlist-meta-card
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.wishlist-table-card
+{
+    overflow: hidden;
+}
+
+.wishlist-table
+{
+    width: 100%;
+    min-width: 1340px;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+}
+
+.wishlist-table thead th
+{
+    padding: 16px 20px;
+    font-size: 14px;
+    line-height: 1.3;
+    white-space: nowrap;
+    background: var(--header);
+    border-bottom: 1px solid var(--border);
+}
+
+.wishlist-table tbody td
+{
+    padding: 18px 20px;
+    font-size: 16px;
+    line-height: 1.55;
+    white-space: nowrap;
+    vertical-align: middle;
+    background: transparent;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wishlist-table tbody tr:hover td
+{
+    background: var(--surface-soft);
+}
+
+.wishlist-col-author
+{
+    width: 260px;
+}
+
+.wishlist-col-title
+{
+    width: 420px;
+}
+
+.wishlist-col-series
+{
+    width: 240px;
+}
+
+.wishlist-col-part
+{
+    width: 90px;
+    text-align: center;
+}
+
+.wishlist-col-genres
+{
+    width: 220px;
+}
+
+.wishlist-col-year
+{
+    width: 140px;
+}
+
+.wishlist-mobile-list
+{
+    margin-top: 20px;
+}
+
+.wishlist-mobile-card
+{
+    padding: 20px;
+}
+
+.mobile-book-meta
+{
+    display: grid;
+    gap: 8px;
+    margin-top: 12px;
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.55;
 }
 
 /* =========================================================
@@ -821,7 +1160,7 @@ tbody tr:last-child td
     justify-content: center;
     width: 58px;
     height: 58px;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: var(--accent);
     color: #fff;
     box-shadow: var(--shadow);
@@ -867,6 +1206,34 @@ tbody tr:last-child td
 }
 
 /* =========================================================
+   Render inline links in tables and details neutrally
+   ========================================================= */
+
+td a,
+.details-value a,
+.mobile-book-author a,
+.subtitle a,
+.status-value a,
+.info-card-value a
+{
+    color: inherit;
+    text-decoration: none;
+}
+
+td a:hover,
+.details-value a:hover,
+.mobile-book-author a:hover,
+.subtitle a:hover,
+.status-value a:hover,
+.info-card-value a:hover
+{
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+}
+
+/* =========================================================
    Responsive
    ========================================================= */
 
@@ -892,19 +1259,16 @@ tbody tr:last-child td
         justify-content: flex-start;
     }
 
-    .search-card
+    .search-card,
+    .meta-card
     {
         flex: none;
+        min-width: 0;
     }
 
     .toolbar-side
     {
         flex: 1 1 auto;
-    }
-
-    .meta-card
-    {
-        min-width: unset;
     }
 
     .hero
@@ -964,7 +1328,15 @@ tbody tr:last-child td
 
     .form-grid,
     .details-grid,
-    .genre-grid
+    .genre-grid,
+    .schuber-grid,
+    .info-card-grid,
+    .inline-status-grid
+    {
+        grid-template-columns: 1fr;
+    }
+
+    .inline-toggle-group
     {
         grid-template-columns: 1fr;
     }
@@ -988,6 +1360,11 @@ tbody tr:last-child td
     .mobile-fab.mobile-only
     {
         display: inline-flex;
+    }
+
+    .wishlist-toolbar-button
+    {
+        min-height: 52px;
     }
 
     .footer-note

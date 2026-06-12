@@ -13,7 +13,7 @@ $pageTitle = $pageTitle ?? 'BookDB';
 
 <title><?php echo htmlspecialchars($pageTitle); ?></title>
 
-<link rel="icon" type="image/svg+xml" href="/bookdb/favicon.svg?v=1">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=1">
 
 <link rel="stylesheet" href="style.css">
 

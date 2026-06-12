@@ -5,11 +5,12 @@ require_once __DIR__ . '/db_connect.php';
 require_once __DIR__ . '/functions.php';
 require_once __DIR__ . '/books.php';
 
-$q = isset($_GET['q']) ? trim($_GET['q']) : '';
-$sort = isset($_GET['sort']) ? $_GET['sort'] : 'autor';
-$dir = isset($_GET['dir']) ? strtolower($_GET['dir']) : 'asc';
+$q = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
+$sort = isset($_GET['sort']) ? (string)$_GET['sort'] : 'autor';
+$dir = isset($_GET['dir']) ? strtolower(trim((string)$_GET['dir'])) : 'asc';
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $perPage = isset($_GET['per_page']) ? strtolower(trim((string)$_GET['per_page'])) : '25';
+$onlyLent = isset($_GET['lent']) && $_GET['lent'] === '1';
 $added = isset($_GET['added']) && $_GET['added'] === '1';
 $deleted = isset($_GET['deleted']) && $_GET['deleted'] === '1';
 
@@ -50,7 +51,8 @@ catch (mysqli_sql_exception $e)
 
 try
 {
-    $gesamtanzahl = countBooks($mysqli, $q);
+    $gesamtanzahl = countBooks($mysqli, $q, $onlyLent);
+    $wishlistCount = countWishlistItems($mysqli);
 
     if ($perPage === 'all')
     {
@@ -72,11 +74,12 @@ try
         $offset = ($page - 1) * $limit;
     }
 
-    $result = getBooks($mysqli, $q, $orderBy, $limit, $offset);
+    $result = getBooks($mysqli, $q, $orderBy, $limit, $offset, $onlyLent);
     $anzahl = $gesamtanzahl;
 }
 catch (mysqli_sql_exception $e)
 {
+    $mysqli->close();
     renderQueryErrorPage($e);
     exit;
 }
@@ -89,4 +92,3 @@ if ($result instanceof mysqli_result)
 }
 
 $mysqli->close();
-?>

@@ -2,19 +2,19 @@
 $footerRightContent = $footerRightContent ?? '';
 ?>
 
-<div class="footer-note">
+    <div class="footer-note">
 
-    <div class="footer-left">
-        BookDB v1.0 © 2026 cpttelefonmast
-    </div>
-
-    <?php if ($footerRightContent !== ''): ?>
-        <div class="footer-right">
-            <?php echo $footerRightContent; ?>
+        <div class="footer-left">
+            BookDB v1.1 ©cpttelefonmast 2026
         </div>
-    <?php endif; ?>
 
-</div>
+        <?php if ($footerRightContent !== ''): ?>
+            <div class="footer-right">
+                <?php echo $footerRightContent; ?>
+            </div>
+        <?php endif; ?>
+
+    </div>
 
 </div>
 

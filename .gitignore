@@ -1,0 +1,17 @@
+# Local configuration and editor files
+.env
+*.local.php
+*.log
+
+# Generated exports / backups
+*.csv
+*.sql
+*.zip
+backup/
+exports/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
