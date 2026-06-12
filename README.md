@@ -104,7 +104,7 @@ Example using Git:
 
 ```bash
 cd /var/www/html
-sudo git clone https://github.com/YOUR_USERNAME/BookDB.git bookdb
+sudo git clone https://github.com/CptTelefonmast/BookDB.git bookdb
 ```
 
 Example target directory:
