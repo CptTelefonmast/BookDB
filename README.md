@@ -1,13 +1,11 @@
-# BookDB
-
+BookDB
 > ⚠ **Security Notice**  
-> This project currently does **not include encryption or user authentication**.  
-> Anyone who can access the application can add, edit or delete books.  
+> This project currently does **not** include user authentication or access control.  
+> Anyone who can access the application can add, edit, delete or modify book records.
 >
-> The project was originally built for use on a Raspberry Pi in a private network.  
-> If you plan to expose it to the internet, you should add authentication and HTTPS.
-> 
-> Yes, I know it's coded badly. I'm a system integrator by trade, not a programmer :)
+> BookDB was originally built for use on a Raspberry Pi in a private home network.
+> If you plan to expose it to the internet, you should add authentication, HTTPS and
+> proper hardening first.
 Overview
 BookDB is a small PHP web application for managing a personal book collection.
 It can store books with author, title, series information, publication year, read status,
