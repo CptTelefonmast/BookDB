@@ -6,6 +6,8 @@ It is designed for simple self-hosting, for example on a Raspberry Pi or another
 The application supports books, genres, wish list entries, location tracking, lending history,
 read status, purchase source tracking, search, sorting, pagination and CSV export.
 
+Attention! I'm not ashamed to admit that the original project is in German and I've translated everything using AI. I'm just to lazy to do it by hand lol. If you find any mistakes, feel free to notify me. 
+
 ## Security notice
 
 BookDB currently does not include user accounts, authentication or role-based permissions.
