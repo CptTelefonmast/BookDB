@@ -12,7 +12,7 @@
 
 I used to have an excel sheet to keep track of my book collection and to prevent double purchases. It started to get annoying to upload the updated sheet to the cloud whenever I added a book or edited anything. So here is my solution.
 
-BookDB is a lightweight PHP web application for managing a personal book collection.
+BookDB is a PHP web application for managing a personal book collection.
 
 It allows storing books with authors, series information, publication year and multiple genres.  
 The interface supports searching, sorting and pagination and works on both desktop and mobile devices.
