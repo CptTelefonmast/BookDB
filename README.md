@@ -14,6 +14,7 @@ BookDB currently does not include user accounts, authentication or role-based pe
 Anyone who can access the application can add, edit, lend, return or delete records.
 
 Use it only in a trusted private network unless you add authentication, HTTPS and proper server hardening.
+
 I know it's badly coded. I'm a system integrator, not a programmer :)
 
 ---
