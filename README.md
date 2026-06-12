@@ -14,66 +14,68 @@ Anyone who can access the application can add, edit, lend, return or delete reco
 Use it only in a trusted private network unless you add authentication, HTTPS and proper server hardening.
 I know it's badly coded. I'm a system integrator, not a programmer :)
 
-## Current features
+---
 
-- Add, edit and delete books
-- Store author, title, series, series part and publication year
-- Store read status
-- Store where a book was purchased
-- Assign multiple genres to one book
-- Create new genres from the book form
-- Search across book metadata, genres, locations, lending data and purchase source
-- Sort the book table by common fields
-- Pagination with selectable page size
-- Responsive desktop and mobile layout
-- Light and dark theme
-- Book detail pages
-- Current location tracking
-- Location history through `buch_standorte`
-- Shelf, shelf compartment and slipcase support
-- Lending and return tracking
-- Lending history
-- Wish list management
-- Transfer wish list entries into the main book database
-- CSV export through `export.php`
-- CLI helper for updating read status through `mark_read_status.php`
+## Important note about the database schema
 
-## Technology stack
+The interface and documentation are in English, but the database table and column names are
+intentionally still German. This keeps the international version compatible with existing
+BookDB installations.
 
-- PHP 8.2 or newer
-- MariaDB or MySQL
-- Apache or another PHP-capable web server
-- PHP `mysqli` extension
-- Vanilla JavaScript
-- Plain CSS, no frontend framework
-
-## Database compatibility
-
-The interface and documentation are written in English, but the database schema intentionally keeps the original German table and column names.
-
-Examples:
+Do **not** rename these database identifiers unless you also update the PHP code:
 
 - `buecher`
+- `genres`
 - `buch_genres`
 - `buch_standorte`
 - `ausleihen`
+- `wishlist`
 - `wishlist_genres`
+- `autor`
+- `titel`
 - `reihe`
 - `teil_der_reihe`
+- `erscheinungsjahr`
 - `gelesen`
 - `gekauft_bei`
 - `regal`
 - `regalfach`
 - `schuber`
 
-Do not rename these database identifiers unless you also update the PHP code accordingly.
-Keeping the existing schema names makes this version compatible with existing BookDB installations.
+---
 
-## Installation
+## Features
 
-### 1. Install packages
+- Add, edit and delete books
+- Multiple genres per book
+- Dynamic creation of new genres
+- Reading status
+- Purchase source field
+- Location tracking with location history
+- Shelf, shelf compartment and slipcase/box support
+- Clickable slipcase/box overview
+- Loan management
+- Loan history
+- Wish list
+- Transfer wish list entries into the main book database
+- Search across books, genres, locations, purchase source and open loans
+- Sorting and pagination
+- Responsive desktop/mobile layout
+- Light/dark theme
+- CSV export
+- CLI helper for read status updates
 
-On Debian, Ubuntu or Raspberry Pi OS:
+---
+
+## Requirements
+
+- Apache
+- PHP 8.x
+- PHP MySQL extension
+- MariaDB or MySQL
+- A Linux/Raspberry Pi style environment is recommended
+
+Install the required packages on Debian, Ubuntu or Raspberry Pi OS:
 
 ```bash
 sudo apt update
@@ -85,27 +87,30 @@ Enable and start the services:
 ```bash
 sudo systemctl enable apache2
 sudo systemctl enable mariadb
-
 sudo systemctl start apache2
 sudo systemctl start mariadb
 ```
 
-### 2. Install the application files
+---
 
-Clone the repository into the Apache web root:
+## Install the application files
+
+Clone or upload the project into Apache's web directory.
+
+Example using Git:
 
 ```bash
 cd /var/www/html
-sudo git clone https://github.com/CptTelefonmast/BookDB.git bookdb
+sudo git clone https://github.com/YOUR_USERNAME/BookDB.git bookdb
 ```
 
-Or upload the files manually into:
+Example target directory:
 
 ```text
 /var/www/html/bookdb
 ```
 
-The PHP files must be directly inside the application directory.
+The files must be directly inside the application directory.
 
 Correct:
 
@@ -115,55 +120,75 @@ Correct:
 /var/www/html/bookdb/books.php
 ```
 
-Incorrect:
+Wrong:
 
 ```text
 /var/www/html/bookdb/bookdb/index.php
 ```
 
-### 3. Create the database
+---
 
-Open the MariaDB shell:
+## Set file permissions before editing configuration
+
+If the files were created by `root`, `www-data` or through `sudo git clone`, your normal user
+may not be able to edit `db_connect.php` or overwrite files by FTP.
+
+Replace `<yourusername>` with your Linux/FTP user:
 
 ```bash
-sudo mysql
+sudo usermod -aG www-data <yourusername>
+
+sudo chown -R www-data:www-data /var/www/html/bookdb
+
+sudo find /var/www/html/bookdb -type d -exec chmod 2775 {} \;
+sudo find /var/www/html/bookdb -type f -exec chmod 664 {} \;
 ```
 
-Create the database:
+After adding the user to the `www-data` group, log out and back in, or reconnect SSH/FTP.
 
-```sql
-CREATE DATABASE bookdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+Expected permissions should look similar to this:
+
+```text
+drwxrwsr-x  www-data www-data  bookdb
+-rw-rw-r--  www-data www-data  db_connect.php
+-rw-rw-r--  www-data www-data  index.php
 ```
 
-Create a database user. Replace the placeholders with your own values.
+Do not use `chmod 777`.
 
-```sql
-CREATE USER 'bookdb_user'@'localhost' IDENTIFIED BY 'change_this_password';
+---
+
+## Create the complete database
+
+This section creates the database, the database user and **all required tables**.
+
+The default values below match the fallback values in `db_connect.php`:
+
+- Database: `bookdb`
+- User: `bookdb_user`
+- Password: `change_me`
+
+For a real installation, change the password and update `db_connect.php` accordingly.
+
+Run this whole block on the server:
+
+```bash
+sudo mysql <<'SQL'
+CREATE DATABASE IF NOT EXISTS bookdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE USER IF NOT EXISTS 'bookdb_user'@'localhost' IDENTIFIED BY 'change_me';
 GRANT ALL PRIVILEGES ON bookdb.* TO 'bookdb_user'@'localhost';
 FLUSH PRIVILEGES;
-```
 
-Select the database:
-
-```sql
 USE bookdb;
-```
 
-### 4. Create the tables
-
-For a new installation, run the full schema below.
-
-<details>
-<summary>Full database schema</summary>
-
-```sql
-CREATE TABLE buecher (
+CREATE TABLE IF NOT EXISTS buecher (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     autor VARCHAR(255) NOT NULL,
     titel VARCHAR(255) NOT NULL,
     reihe VARCHAR(255) NULL,
-    teil_der_reihe INT UNSIGNED NULL,
-    erscheinungsjahr SMALLINT UNSIGNED NULL,
+    teil_der_reihe INT UNSIGNED NULL DEFAULT NULL,
+    erscheinungsjahr SMALLINT UNSIGNED NULL DEFAULT NULL,
     gelesen TINYINT(1) NOT NULL DEFAULT 0,
     gekauft_bei VARCHAR(255) NULL DEFAULT NULL,
 
@@ -174,12 +199,12 @@ CREATE TABLE buecher (
     INDEX idx_buecher_gekauft_bei (gekauft_bei)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE genres (
+CREATE TABLE IF NOT EXISTS genres (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL UNIQUE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE buch_genres (
+CREATE TABLE IF NOT EXISTS buch_genres (
     buch_id INT UNSIGNED NOT NULL,
     genre_id INT UNSIGNED NOT NULL,
 
@@ -197,7 +222,7 @@ CREATE TABLE buch_genres (
         ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE buch_standorte (
+CREATE TABLE IF NOT EXISTS buch_standorte (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     buch_id INT UNSIGNED NOT NULL,
     regal VARCHAR(255) NULL,
@@ -219,7 +244,7 @@ CREATE TABLE buch_standorte (
         ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE ausleihen (
+CREATE TABLE IF NOT EXISTS ausleihen (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     buch_id INT UNSIGNED NOT NULL,
     person VARCHAR(255) NOT NULL,
@@ -237,20 +262,21 @@ CREATE TABLE ausleihen (
         ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE wishlist (
+CREATE TABLE IF NOT EXISTS wishlist (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     autor VARCHAR(255) NOT NULL,
     titel VARCHAR(255) NOT NULL,
     reihe VARCHAR(255) NULL,
-    teil_der_reihe INT UNSIGNED NULL,
-    erscheinungsjahr SMALLINT UNSIGNED NULL,
+    teil_der_reihe INT UNSIGNED NULL DEFAULT NULL,
+    erscheinungsjahr SMALLINT UNSIGNED NULL DEFAULT NULL,
 
     INDEX idx_wishlist_autor (autor),
     INDEX idx_wishlist_titel (titel),
-    INDEX idx_wishlist_reihe (reihe)
+    INDEX idx_wishlist_reihe (reihe),
+    INDEX idx_wishlist_series_order (reihe, teil_der_reihe)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE wishlist_genres (
+CREATE TABLE IF NOT EXISTS wishlist_genres (
     wishlist_id INT UNSIGNED NOT NULL,
     genre_id INT UNSIGNED NOT NULL,
 
@@ -267,150 +293,62 @@ CREATE TABLE wishlist_genres (
         REFERENCES genres(id)
         ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+SQL
 ```
 
-</details>
+Check that the tables exist:
 
-Exit MariaDB after creating the schema:
-
-```sql
-EXIT;
+```bash
+mysql -u bookdb_user -p bookdb -e "SHOW TABLES;"
 ```
 
-### 5. Configure the database connection
-
-BookDB reads the database connection settings from `db_connect.php`.
-The recommended setup is to use Apache environment variables.
-
-Supported variables:
+You should see:
 
 ```text
-BOOKDB_DB_HOST
-BOOKDB_DB_USER
-BOOKDB_DB_PASSWORD
-BOOKDB_DB_NAME
-BOOKDB_DB_PORT
+ausleihen
+buecher
+buch_genres
+buch_standorte
+genres
+wishlist
+wishlist_genres
 ```
 
-Example values:
+---
+
+## Configure the database connection
+
+Edit:
 
 ```text
-BOOKDB_DB_HOST=localhost
-BOOKDB_DB_USER=bookdb_user
-BOOKDB_DB_PASSWORD=change_this_password
-BOOKDB_DB_NAME=bookdb
-BOOKDB_DB_PORT=3306
+/var/www/html/bookdb/db_connect.php
 ```
 
-#### Option A: Apache environment variables
-
-Create a small Apache configuration file:
-
-```bash
-sudo nano /etc/apache2/conf-available/bookdb.conf
-```
-
-Add your values:
-
-```apache
-SetEnv BOOKDB_DB_HOST localhost
-SetEnv BOOKDB_DB_USER bookdb_user
-SetEnv BOOKDB_DB_PASSWORD change_this_password
-SetEnv BOOKDB_DB_NAME bookdb
-SetEnv BOOKDB_DB_PORT 3306
-```
-
-Enable the configuration and reload Apache:
-
-```bash
-sudo a2enconf bookdb
-sudo systemctl reload apache2
-```
-
-#### Option B: Edit `db_connect.php`
-
-For a simple local installation, you can edit the fallback values in `db_connect.php`.
-Do not commit real credentials to a public repository.
-
-### 6. Set file permissions
-
-Apache must be able to read the files. If you upload files via FTP and want to overwrite them later, your FTP user also needs write access.
-
-Replace `<yourusername>` with your Linux or FTP user:
-
-```bash
-sudo usermod -aG www-data <yourusername>
-
-sudo chown -R www-data:www-data /var/www/html/bookdb
-
-sudo find /var/www/html/bookdb -type d -exec chmod 2775 {} \;
-sudo find /var/www/html/bookdb -type f -exec chmod 664 {} \;
-```
-
-After adding your user to the `www-data` group, log out and back in or reconnect your FTP session.
-
-Expected permissions:
+The file supports these environment variables:
 
 ```text
-drwxrwsr-x  www-data www-data  bookdb
--rw-rw-r--  www-data www-data  index.php
--rw-rw-r--  www-data www-data  details.php
--rw-rw-r--  www-data www-data  books.php
+BOOKDB_HOST
+BOOKDB_USER
+BOOKDB_PASSWORD
+BOOKDB_NAME
 ```
 
-Avoid using `chmod 777`.
+The default values are:
 
-## Upgrading an older BookDB database
-
-Older BookDB versions only used these tables:
-
-- `buecher`
-- `genres`
-- `buch_genres`
-
-The current version also needs these fields and tables:
-
-- `buecher.gelesen`
-- `buecher.gekauft_bei`
-- `buch_standorte`
-- `ausleihen`
-- `wishlist`
-- `wishlist_genres`
-
-Before upgrading, create a backup.
-
-```bash
-mysqldump -u bookdb_user -p bookdb > bookdb_backup.sql
+```text
+BOOKDB_HOST=localhost
+BOOKDB_USER=bookdb_user
+BOOKDB_PASSWORD=change_me
+BOOKDB_NAME=bookdb
 ```
 
-Then open MariaDB:
+If you used the default SQL block above, the application should work without changing
+`db_connect.php`. For a real installation, use a stronger password and keep the PHP config
+in sync with the database user.
 
-```bash
-sudo mysql
-```
+---
 
-Select the database:
-
-```sql
-USE bookdb;
-```
-
-Add the new columns if they do not exist yet:
-
-```sql
-ALTER TABLE buecher
-    ADD COLUMN gelesen TINYINT(1) NOT NULL DEFAULT 0 AFTER erscheinungsjahr;
-
-ALTER TABLE buecher
-    ADD COLUMN gekauft_bei VARCHAR(255) NULL DEFAULT NULL AFTER gelesen;
-```
-
-Then create the missing tables from the full schema above.
-
-If an index or column already exists, MariaDB/MySQL may return a duplicate-name error.
-In that case, skip that specific statement and continue with the missing objects.
-
-## Running the application
+## Run the application
 
 Open the application in your browser:
 
@@ -418,47 +356,49 @@ Open the application in your browser:
 http://localhost/bookdb
 ```
 
-Or from another device in your network:
+or from another device in your network:
 
 ```text
 http://your-server/bookdb
 ```
 
-Adjust the URL if you installed BookDB into a different directory.
+---
 
 ## CSV export
 
-Run the export script from the command line:
+Run from the command line:
 
 ```bash
 cd /var/www/html/bookdb
 php export.php
 ```
 
-This creates a timestamped CSV file in the project directory.
-
-You can also pass a target path:
+Optional target file:
 
 ```bash
 php export.php /home/YOUR_USERNAME/bookdb_export.csv
 ```
 
+---
+
 ## Read status CLI helper
 
-The file `mark_read_status.php` can be used from the command line to update the read status for existing books.
+Run:
 
 ```bash
 cd /var/www/html/bookdb
 php mark_read_status.php
 ```
 
-Follow the prompts shown by the script.
+Follow the prompts.
+
+---
 
 ## Troubleshooting
 
 ### 500 Internal Server Error
 
-Check the Apache error log:
+Check Apache's error log:
 
 ```bash
 sudo tail -n 100 /var/log/apache2/error.log
@@ -467,14 +407,14 @@ sudo tail -n 100 /var/log/apache2/error.log
 Common causes:
 
 - missing PHP files
-- wrong file permissions
-- incorrect database credentials
-- missing database tables or columns
-- syntax errors after manual edits
+- wrong permissions
+- wrong database credentials
+- missing tables or columns
+- PHP syntax errors after manual edits
 
-### Permission denied when including PHP files
+### Permission denied when PHP includes a file
 
-Fix ownership and permissions:
+Reset ownership and permissions:
 
 ```bash
 sudo chown -R www-data:www-data /var/www/html/bookdb
@@ -483,35 +423,30 @@ sudo find /var/www/html/bookdb -type f -exec chmod 664 {} \;
 sudo systemctl reload apache2
 ```
 
+### FTP upload cannot overwrite files
+
+Make sure your FTP user is in the `www-data` group and the application directory is group-writable:
+
+```bash
+sudo usermod -aG www-data <yourusername>
+sudo chown -R www-data:www-data /var/www/html/bookdb
+sudo find /var/www/html/bookdb -type d -exec chmod 2775 {} \;
+sudo find /var/www/html/bookdb -type f -exec chmod 664 {} \;
+```
+
+Reconnect FTP after changing group membership.
+
 ### Database connection fails
 
-Check that:
-
-- the database exists
-- the database user exists
-- the password is correct
-- `db_connect.php` or the Apache environment variables contain the same credentials
-- the database user has privileges on the selected database
-
-You can test the login manually:
+Test the login manually:
 
 ```bash
 mysql -u bookdb_user -p bookdb
 ```
 
-### Tables or columns are missing
+Check that the credentials in `db_connect.php` match the database user.
 
-The current version expects at least these tables:
-
-```text
-buecher
-genres
-buch_genres
-buch_standorte
-ausleihen
-wishlist
-wishlist_genres
-```
+---
 
 ## Backup recommendation
 
@@ -528,6 +463,8 @@ File backup:
 ```bash
 sudo tar -czf bookdb_files_backup.tar.gz /var/www/html/bookdb
 ```
+
+---
 
 ## License
 
