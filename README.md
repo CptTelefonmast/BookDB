@@ -384,19 +384,6 @@ php export.php /home/YOUR_USERNAME/bookdb_export.csv
 
 ---
 
-## Read status CLI helper
-
-Run:
-
-```bash
-cd /var/www/html/bookdb
-php mark_read_status.php
-```
-
-Follow the prompts.
-
----
-
 ## Troubleshooting
 
 ### 500 Internal Server Error
