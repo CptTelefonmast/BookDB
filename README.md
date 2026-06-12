@@ -6,6 +6,7 @@
 >
 > The project was originally built for use on a Raspberry Pi inside a private network.  
 > If you plan to expose it to the internet, you should add authentication and HTTPS.
+> Yes, I know it's coded badly. I'm a system integrator by trade, not a programmer :)
 
 ## Overview
 
