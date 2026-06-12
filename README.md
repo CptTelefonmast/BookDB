@@ -96,7 +96,7 @@ Clone the repository into the Apache web root:
 
 ```bash
 cd /var/www/html
-sudo git clone https://github.com/YOUR_USERNAME/BookDB.git bookdb
+sudo git clone https://github.com/CptTelefonmast/BookDB.git bookdb
 ```
 
 Or upload the files manually into:
